@@ -4,23 +4,32 @@ using UnityEngine;
 
 public class Laser : MonoBehaviour
 {
+    // Start is called before the first frame update
     // Line OF Renderer
     public LineRenderer LineOfSight;
 
     public int reflections;
     public float MaxRayDistance;
     public LayerMask LayerDetection;
-    public float rotationSpeed;
-
-    private void Start()
+    public float moveSpeed;
+    private Rigidbody2D rb;
+    void Start()
     {
         Physics2D.queriesStartInColliders = false;
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
+    // Update is called once per frame
+    void Update()
     {
-        transform.Rotate(rotationSpeed * Vector3.forward * Time.deltaTime);
+        Vector2 mousePosition = Input.mousePosition;
+        mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        Vector2 direction = new Vector2(
+            mousePosition.x - transform.position.x,
+            mousePosition.y - transform.position.y);
 
+        transform.up = direction;
+        
         LineOfSight.positionCount = 1;
         LineOfSight.SetPosition(0, transform.position);
 
@@ -66,6 +75,9 @@ public class Laser : MonoBehaviour
                 }
             }
         }
+        
+        float move = Input.GetAxis("Horizontal");
 
+        rb.velocity = new Vector2(moveSpeed * move, rb.velocity.y);
     }
 }
